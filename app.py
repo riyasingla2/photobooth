@@ -42,8 +42,6 @@ def create_photobooth_strip(images, bgcolor="black", selected_filter="bw_high_co
 
     total_height = (height * len(images)) + (gap * (len(images) - 1)) + (border * 2) + date_height
     strip = Image.new("RGB", (width + border * 2, total_height), bgcolor)
-
-    # Choose appropriate filter
     filter_map = {
         "bw_high_contrast": apply_bw_high_contrast,
         "sepia": apply_sepia,
@@ -59,7 +57,6 @@ def create_photobooth_strip(images, bgcolor="black", selected_filter="bw_high_co
         top = border + i * (height + gap)
         strip.paste(frame, (border, top))
 
-    # Draw date
     draw = ImageDraw.Draw(strip)
     date_str = datetime.now().strftime("%B %d, %Y")
     font_path = "fonts/Roboto-Regular.ttf"
@@ -87,7 +84,6 @@ def index():
     <meta charset="UTF-8">
     <title>photobooth :)</title>
 
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Ribeye&display=swap" rel="stylesheet">
 
@@ -246,8 +242,6 @@ def index():
     <br><br>
     <input type="file" id="uploadInput" accept="image/*" multiple><br><br>
 
-  
-
 
     <div id="captures"></div>
 
@@ -351,8 +345,6 @@ function resetImages() {
     submitBtn.disabled = true;
 }
 window.resetImages = resetImages;
-
-// Cropper logic
 let cropper;
 
 function showCropper(imgSrc) {
@@ -414,22 +406,18 @@ uploadInput.addEventListener('change', () => {
     uploadInput.value = '';
 });
 
-// Init on load
 generateHiddenInputs();
 </script>
 
 </body>
 </html>
-
-
     '''
 @app.route('/generate', methods=['POST'])
 def generate_strip():
-    # Collect all form keys that start with 'img'
     data_urls = [v for k, v in request.form.items() if k.startswith('img') and v]
 
     if not (2 <= len(data_urls) <= 4):
-        return "❌ Please provide between 2 and 4 images.", 400
+        return "Please provide between 2 and 4 images.", 400
 
     images = []
     for data_url in data_urls:
@@ -440,9 +428,8 @@ def generate_strip():
         img = Image.open(BytesIO(img_data))
         images.append(img)
         bgcolor = request.form.get('bgcolor', 'black')
-        selected_filter = request.form.get('filter', 'bw_high_contrast')  # Add this line
-    result = create_photobooth_strip(images, bgcolor=bgcolor, selected_filter=selected_filter)  # Add selected_filter parameter
-
+        selected_filter = request.form.get('filter', 'bw_high_contrast') 
+    result = create_photobooth_strip(images, bgcolor=bgcolor, selected_filter=selected_filter) 
 
     img_io = BytesIO()
     result.save(img_io, 'JPEG')
@@ -452,11 +439,3 @@ def generate_strip():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
-
-
-
